@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · {{ p.nombre }}{% endblock %}
+{% block contenido %}<h2>{{ p.nombre }} <span class="pill {{ 'suficiente' if p.estatus=='suficiente' else 'proximo' if p.estatus=='próximo al mínimo' else 'reabastecer' }}">{{ p.estatus }}</span></h2>
+<div class="tarjeta"><table style="width:100%">
+<tr><td style="width:22%"><b>ID</b></td><td>{{ p.id_producto }}</td><td style="width:22%"><b>Código</b></td><td>{{ p.codigo }}</td></tr>
+<tr><td><b>Marca</b></td><td>{{ p.marca or '—' }}</td><td><b>Categoría</b></td><td>{{ p.categoria }}</td></tr>
+<tr><td><b>Proveedor</b></td><td>{{ p.proveedor or '—' }}</td><td><b>Ubicación</b></td><td>{{ p.ubicacion or '—' }}</td></tr>
+<tr><td><b>Características</b></td><td colspan="3">{{ p.descripcion or '—' }}</td></tr>
+<tr><td><b>Compatibilidad</b></td><td colspan="3">{{ p.compatibilidad or '—' }}</td></tr>
+<tr><td><b>Precio de venta</b></td><td>${{ '{:,.2f}'.format(p.precio_venta) }}</td><td><b>Precio de compra</b></td><td>${{ '{:,.2f}'.format(p.precio_compra) }}</td></tr>
+<tr><td><b>Utilidad por pieza</b></td><td>${{ '{:,.2f}'.format(p.utilidad) }}{% if p.margen_pct is not none %} ({{ p.margen_pct }} %){% endif %}</td><td><b>Existencia / mínimo</b></td><td><b>{{ p.stock_actual }}</b> / {{ p.stock_minimo }}</td></tr></table><br>
+<a href="{{ url_for('form_refaccion', id_producto=p.id_producto) }}"><button type="button" class="sec">Editar ficha</button></a>
+<a href="{{ url_for('lista_refacciones') }}">← Volver al catálogo</a></div>
+<div class="tarjeta"><h3>Registrar entrada de mercancía</h3><form method="post" action="{{ url_for('entrada_refaccion', id_producto=p.id_producto) }}" class="fila">
+<div><label for="cantidad" style="margin-top:0">Piezas que entran</label><input type="number" id="cantidad" name="cantidad" min="1" required></div>
+<div style="flex:2"><label for="motivo" style="margin-top:0">Motivo (compra, devolución…)</label><input type="text" id="motivo" name="motivo" maxlength="38" placeholder="compra"></div>
+<div style="flex:0 0 auto"><button type="submit">Registrar entrada</button></div></form></div>
+<div class="tarjeta"><h3>Últimos movimientos</h3><table><tr><th>Fecha</th><th>Tipo</th><th class="num">Cantidad</th><th>Referencia</th><th>Usuario</th></tr>
+{% for m in movs %}<tr><td>{{ m.fecha|fh }}</td><td>{{ m.tipo }}</td><td class="num">{{ m.cantidad }}</td><td>{{ m.referencia or '—' }}</td><td>{{ m.usuario }}</td></tr>
+{% else %}<tr><td colspan="5">Sin movimientos.</td></tr>{% endfor %}</table></div>{% endblock %}

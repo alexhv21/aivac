@@ -1,0 +1,31 @@
+:root{--navy:#1B3A6B;--azul:#2C5496;--claro:#E3EBF8;--borde:#C9D5EA;--ok:#2E8B57;--err:#C0392B;--gris:#5b6b86}
+*{box-sizing:border-box}body{margin:0;font-family:"Liberation Sans",Arial,sans-serif;background:#F4F7FC;color:#1a2433;font-size:14px}
+.layout{display:flex;min-height:100vh}
+.menu{width:210px;background:var(--navy);color:#fff;padding:18px 0;flex-shrink:0}
+.menu h1{font-size:18px;margin:0 18px 4px}.menu small{display:block;margin:0 18px 18px;color:#B8C7E6;font-size:11px}
+.menu a{display:block;color:#DCE6F7;text-decoration:none;padding:10px 18px;border-left:4px solid transparent}
+.menu a.activo,.menu a:hover{background:#27508F;border-left-color:#fff;color:#fff}
+.menu .quien{margin:24px 18px 0;font-size:12px;color:#B8C7E6;border-top:1px solid #3a5a8f;padding-top:12px}
+main{flex:1;padding:22px 28px;max-width:1100px}
+h2{margin:0 0 14px;color:var(--navy);font-size:20px}
+.tarjeta{background:#fff;border:1px solid var(--borde);border-radius:8px;padding:16px;margin-bottom:16px}
+.tarjeta h3{margin:0 0 10px;font-size:14px;color:var(--azul)}
+input,select,button{font:inherit;padding:8px 10px;border:1px solid #9DB2D6;border-radius:6px}
+input[type=text],input[type=password],input[type=search],input[type=number]{width:100%}
+button{background:var(--azul);color:#fff;border-color:var(--azul);cursor:pointer}
+button.sec{background:#fff;color:var(--azul)}button:disabled{opacity:.5;cursor:not-allowed}
+table{width:100%;border-collapse:collapse}th{background:var(--navy);color:#fff;text-align:left;padding:7px 9px;font-size:12px}
+td{padding:7px 9px;border-bottom:1px solid #E1E8F5}td.num,th.num{text-align:right}
+.res{border:1px solid var(--borde);border-radius:6px;margin-top:6px;max-height:210px;overflow:auto;background:#fff}
+.res div{padding:7px 10px;border-bottom:1px solid #EEF2FA;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+.res div:hover{background:var(--claro)}.res .sin{color:var(--err);cursor:not-allowed}
+.aviso{padding:10px 12px;border-radius:6px;margin-bottom:12px}.aviso.err{background:#FBE9E7;border:1px solid #E6A79F;color:#8a251b}
+.aviso.ok{background:#E3F4EA;border:1px solid #9AD1B0;color:#1d6a40}
+.fila{display:flex;gap:12px;align-items:flex-end}.fila>*{flex:1}
+.total{font-size:26px;font-weight:bold;color:var(--navy);text-align:right}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:bold}
+.pill.suficiente{background:#DDEFE4;color:#1d6a40}.pill.reabastecer,.pill.sin{background:#FBE0DC;color:#8a251b}.pill.proximo{background:#FFF1CC;color:#6b5300}
+.login{max-width:360px;margin:12vh auto}.login .tarjeta{padding:24px}.login h1{color:var(--navy);margin:0 0 4px}
+label{display:block;font-size:12px;color:var(--gris);margin:10px 0 4px}
+.comp{max-width:560px;margin:auto}.comp h3{text-align:center}.pie{display:flex;justify-content:space-between;margin-top:8px}
+@media print{.menu,.noimp{display:none}main{padding:0}}

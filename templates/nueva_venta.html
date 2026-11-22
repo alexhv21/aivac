@@ -1,0 +1,99 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Nueva venta{% endblock %}
+{% block contenido %}<h2>Nueva venta</h2>
+<div id="msg"></div>
+<div class="tarjeta"><h3>1. Cliente (opcional)</h3>
+<input type="search" id="q-cli" placeholder="Buscar por nombre, teléfono o placas…" autocomplete="off">
+<div id="res-cli" class="res" hidden></div><p id="cli-sel" style="margin:8px 0 0;color:#1d6a40"><b>Venta de mostrador</b> (sin cliente)</p></div>
+<div class="tarjeta"><h3>2. Refacciones y servicios</h3>
+<input type="search" id="q-cat" placeholder="Buscar por nombre o código (mínimo 2 letras)…" autocomplete="off">
+<div id="res-cat" class="res" hidden></div>
+<table style="margin-top:12px"><thead><tr><th>Concepto</th><th class="num">Existencia</th><th class="num">Cantidad</th><th class="num">P. unit.</th><th class="num">Importe</th><th></th></tr></thead>
+<tbody id="partidas"><tr><td colspan="6" style="color:#5b6b86">Aún no hay partidas.</td></tr></tbody></table></div>
+<div class="tarjeta"><h3>3. Pago y total</h3><div class="fila"><div><label for="pago">Forma de pago</label>
+<select id="pago"><option value="">Seleccione…</option>{% for f in formas_pago %}<option value="{{ f }}">{{ f|capitalize }}</option>{% endfor %}</select></div>
+<div><div style="font-size:12px;color:#5b6b86;text-align:right">Total a cobrar</div><div class="total" id="total">$0.00</div></div></div>
+<div id="bloque-efectivo" hidden><div class="fila"><div><label for="recibido">Efectivo recibido</label><input type="number" id="recibido" min="0" step="0.01" placeholder="0.00">
+<button type="button" class="sec" id="exacto" style="margin-top:6px">Pago exacto</button></div>
+<div><div style="font-size:12px;color:#5b6b86;text-align:right">Cambio a entregar</div><div class="total" id="cambio" style="color:#1d6a40">$0.00</div></div></div></div>
+<p style="text-align:right;margin-bottom:0"><button id="confirmar">Confirmar venta</button></p></div>
+<script>
+// Estado de la venta en el navegador; el servidor vuelve a validar todo y toma los precios de la base de datos.
+const estado = {cliente: null, partidas: []};
+const $ = id => document.getElementById(id);
+const dinero = n => '$' + n.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function mostrarMensaje(texto, tipo) { $('msg').innerHTML = texto ? '<div class="aviso ' + tipo + '">' + esc(texto) + '</div>' : ''; }
+
+const totalVenta = () => estado.partidas.reduce((s, p) => s + p.precio * p.cantidad, 0);
+function pintarCambio() {
+  const efectivo = $('pago').value === 'efectivo';
+  $('bloque-efectivo').hidden = !efectivo;
+  if (!efectivo) return;
+  const falta = totalVenta() - (parseFloat($('recibido').value) || 0);
+  const el = $('cambio');
+  if ($('recibido').value === '') { el.textContent = '$0.00'; el.style.color = '#1d6a40'; }
+  else if (falta > 0.004) { el.textContent = 'Faltan ' + dinero(falta); el.style.color = '#8a251b'; }
+  else { el.textContent = dinero(-falta); el.style.color = '#1d6a40'; }
+}
+$('pago').addEventListener('change', pintarCambio);
+$('recibido').addEventListener('input', pintarCambio);
+$('exacto').addEventListener('click', () => { $('recibido').value = totalVenta().toFixed(2); pintarCambio(); });
+
+function pintar() {
+  const tb = $('partidas');
+  if (!estado.partidas.length) { tb.innerHTML = '<tr><td colspan="6" style="color:#5b6b86">Aún no hay partidas.</td></tr>'; $('total').textContent = '$0.00'; pintarCambio(); return; }
+  tb.innerHTML = estado.partidas.map((p, i) =>
+    '<tr><td>' + esc(p.nombre) + '</td><td class="num">' + (p.existencia === null ? '—' : p.existencia) + '</td>' +
+    '<td class="num"><input type="number" min="1" value="' + p.cantidad + '" style="width:70px" data-i="' + i + '" class="cant"></td>' +
+    '<td class="num">' + dinero(p.precio) + '</td><td class="num">' + dinero(p.precio * p.cantidad) + '</td>' +
+    '<td><button class="sec quitar" data-i="' + i + '">Quitar</button></td></tr>').join('');
+  $('total').textContent = dinero(totalVenta());
+  pintarCambio();
+}
+
+function buscar(inputId, resId, url, dibujar) {
+  let t;
+  $(inputId).addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(async () => {
+      const q = $(inputId).value;
+      if (q.trim().length < 2) { $(resId).hidden = true; return; }
+      const datos = await (await fetch(url + encodeURIComponent(q))).json();
+      $(resId).hidden = false;
+      $(resId).innerHTML = datos.length ? datos.map(dibujar).join('') : '<div class="sin">Sin resultados</div>';
+    }, 200);
+  });
+}
+
+buscar('q-cat', 'res-cat', '/api/catalogo?q=', r => {
+  const sin = r.tipo === 'producto' && r.existencia <= 0;
+  return '<div class="' + (sin ? 'sin' : 'op') + '" data-r=\'' + esc(JSON.stringify(r)) + '\'><span>' + esc(r.nombre) + (r.marca ? ' · ' + esc(r.marca) : '') + (r.codigo ? ' · ' + esc(r.codigo) : '') + '</span><span>' +
+         dinero(r.precio) + (r.existencia === null ? ' · servicio' : ' · exist. ' + r.existencia) + '</span></div>';
+});
+buscar('q-cli', 'res-cli', '/api/clientes?q=', c => '<div class="op" data-c=\'' + esc(JSON.stringify(c)) + '\'><span>' + esc(c.nombre) + '</span><span>' + esc(c.tipo_cliente) + '</span></div>');
+
+$('res-cat').addEventListener('click', e => {
+  const d = e.target.closest('[data-r]'); if (!d || d.classList.contains('sin')) return;
+  const r = JSON.parse(d.dataset.r);
+  const ya = estado.partidas.find(p => p.tipo === r.tipo && p.id === r.id);
+  if (ya) ya.cantidad += 1; else estado.partidas.push({tipo: r.tipo, id: r.id, nombre: r.nombre, precio: r.precio, existencia: r.existencia, cantidad: 1});
+  $('res-cat').hidden = true; $('q-cat').value = ''; mostrarMensaje(''); pintar();
+});
+$('res-cli').addEventListener('click', e => {
+  const d = e.target.closest('[data-c]'); if (!d) return;
+  const c = JSON.parse(d.dataset.c); estado.cliente = c.id_cliente;
+  $('cli-sel').innerHTML = '<b>' + esc(c.nombre) + '</b> (' + esc(c.tipo_cliente) + ')'; $('res-cli').hidden = true; $('q-cli').value = '';
+});
+$('partidas').addEventListener('input', e => { if (e.target.classList.contains('cant')) { estado.partidas[e.target.dataset.i].cantidad = Math.max(1, parseInt(e.target.value) || 1); pintar(); } });
+$('partidas').addEventListener('click', e => { if (e.target.classList.contains('quitar')) { estado.partidas.splice(e.target.dataset.i, 1); pintar(); } });
+
+$('confirmar').addEventListener('click', async () => {
+  $('confirmar').disabled = true;
+  const r = await fetch('/ventas', {method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({id_cliente: estado.cliente, forma_pago: $('pago').value, monto_recibido: $('pago').value === 'efectivo' ? $('recibido').value : null,
+                          partidas: estado.partidas.map(p => ({tipo: p.tipo, id: p.id, cantidad: p.cantidad}))})});
+  const d = await r.json();
+  if (d.ok) { window.location = d.url; } else { mostrarMensaje(d.error, 'err'); $('confirmar').disabled = false; }
+});
+</script>{% endblock %}

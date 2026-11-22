@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Inventario{% endblock %}
+{% block contenido %}<h2>Inventario</h2><div class="tarjeta"><table>
+<tr><th>Código</th><th>Refacción</th><th class="num">Existencia</th><th class="num">Mínimo</th><th>Estatus</th></tr>
+{% for f in filas %}<tr><td>{{ f.codigo }}</td><td>{{ f.nombre }}</td><td class="num"><b>{{ f.stock_actual }}</b></td><td class="num">{{ f.stock_minimo }}</td>
+<td><span class="pill {{ 'suficiente' if f.estatus=='suficiente' else 'proximo' if f.estatus=='próximo al mínimo' else 'reabastecer' }}">{{ f.estatus }}</span></td></tr>{% endfor %}
+</table></div>{% endblock %}

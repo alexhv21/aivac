@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Comprobante{% endblock %}
+{% block contenido %}<div class="comp"><div class="aviso ok noimp">Venta registrada correctamente.</div>
+<div class="tarjeta"><h3 style="font-size:16px">Comprobante interno de venta</h3>
+<p style="text-align:center;color:#5b6b86;margin-top:-6px">Sin valor fiscal · Folio V-{{ '%05d' % cab.id_venta }}</p>
+<div class="pie"><span><b>Cliente:</b> {{ cab.cliente }}</span><span>{{ cab.fecha|fh }}</span></div>
+<div class="pie"><span><b>Atendió:</b> {{ cab.atendio }}</span><span><b>Pago:</b> {{ cab.forma_pago }}</span></div>
+<table style="margin-top:12px"><tr><th>Concepto</th><th class="num">Cant.</th><th class="num">P. unit.</th><th class="num">Importe</th></tr>
+{% for p in partidas %}<tr><td>{{ p.concepto }}</td><td class="num">{{ p.cantidad }}</td><td class="num">${{ '{:,.2f}'.format(p.precio_unitario) }}</td><td class="num">${{ '{:,.2f}'.format(p.subtotal) }}</td></tr>{% endfor %}</table>
+<div class="total" id="total">${{ '{:,.2f}'.format(total) }}</div>
+{% if cab.monto_recibido is not none %}<table style="margin-top:8px;width:auto;margin-left:auto"><tr><td>Efectivo recibido:</td><td class="num" id="recibido">${{ '{:,.2f}'.format(cab.monto_recibido) }}</td></tr>
+<tr><td><b>Cambio:</b></td><td class="num" id="cambio"><b>${{ '{:,.2f}'.format(cab.cambio) }}</b></td></tr></table>{% endif %}</div>
+<p class="noimp"><button onclick="window.print()">Imprimir</button> <a href="{{ url_for('nueva_venta') }}"><button class="sec">Nueva venta</button></a></p></div>{% endblock %}

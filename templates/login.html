@@ -1,0 +1,7 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>AIVAC · Acceso</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="login"><div class="tarjeta"><h1>AIVAC</h1><p style="color:#5b6b86;margin-top:0">Sistema Integral de Ventas y Almacén Castellanos</p>
+{% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+<form method="post"><label for="usuario">Usuario</label><input type="text" id="usuario" name="usuario" autocomplete="username" required>
+<label for="contrasena">Contraseña</label><input type="password" id="contrasena" name="contrasena" autocomplete="current-password" required>
+<p><button type="submit" style="width:100%">Entrar</button></p></form></div></div></body></html>

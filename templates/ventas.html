@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Ventas{% endblock %}
+{% block contenido %}<h2>Ventas recientes</h2><div class="tarjeta"><table>
+<tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Forma de pago</th><th class="num">Total</th><th></th></tr>
+{% for f in filas %}<tr><td>V-{{ '%05d' % f.id_venta }}</td><td>{{ f.fecha|fh }}</td><td>{{ f.cliente }}</td><td>{{ f.forma_pago }}</td>
+<td class="num">${{ '{:,.2f}'.format(f.total) }}</td><td><a href="{{ url_for('ver_comprobante', id_venta=f.id_venta) }}">Comprobante</a></td></tr>
+{% else %}<tr><td colspan="6">Aún no hay ventas registradas.</td></tr>{% endfor %}</table></div>{% endblock %}

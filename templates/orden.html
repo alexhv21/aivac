@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · OT-{{ '%05d' % o.id_orden }}{% endblock %}
+{% block contenido %}<h2>Orden OT-{{ '%05d' % o.id_orden }} <span class="pill {{ 'suficiente' if o.estatus in ('terminada','entregada') else 'proximo' if o.estatus in ('abierta','en_proceso') else 'reabastecer' }}">{{ etiqueta_estatus[o.estatus] }}</span></h2>
+<div class="tarjeta"><b>Cliente:</b> <a href="{{ url_for('ficha_cliente', id_cliente=o.id_cliente) if puede_clientes else '#' }}">{{ o.cliente }}</a> ({{ o.telefono or 'sin teléfono' }})<br>
+<b>Vehículo:</b> {{ o.placas }} · {{ o.marca or '' }} {{ o.modelo or '' }} {{ o.anio or '' }} · <b>Km de ingreso:</b> {{ '{:,}'.format(o.kilometraje_ingreso) }}<br>
+<b>Mecánico:</b> {{ o.mecanico }} · <b>Ingreso:</b> {{ o.fecha_ingreso|fh }}{% if o.fecha_entrega %} · <b>Entrega:</b> {{ o.fecha_entrega|fh }}{% endif %}<br>
+<b>Observaciones:</b> {{ o.observaciones or '—' }}</div>
+<div class="tarjeta"><h3>Servicios</h3><table><tr><th>Servicio</th><th class="num">Precio</th></tr>
+{% for s in servicios %}<tr><td>{{ s.nombre }}</td><td class="num">${{ '{:,.2f}'.format(s.precio_aplicado) }}</td></tr>{% else %}<tr><td colspan="2">Sin servicios.</td></tr>{% endfor %}</table>
+{% if editable %}<form method="post" action="{{ url_for('orden_servicio', id_orden=o.id_orden) }}" class="fila" style="margin-top:10px"><div><select name="id_servicio" style="width:100%" required>
+<option value="">Agregar servicio…</option>{% for s in cat_servicios %}<option value="{{ s.id_servicio }}">{{ s.nombre }} — ${{ '{:,.2f}'.format(s.precio_base) }}</option>{% endfor %}</select></div>
+<div style="flex:0 0 auto"><button type="submit">Agregar</button></div></form>{% endif %}</div>
+<div class="tarjeta"><h3>Refacciones</h3><table><tr><th>Código</th><th>Refacción</th><th class="num">Cant.</th><th>Estatus</th><th class="num">Importe</th></tr>
+{% for r in refacciones %}<tr><td>{{ r.codigo }}</td><td>{{ r.nombre }}</td><td class="num">{{ r.cantidad }}</td>
+<td><span class="pill {{ 'suficiente' if r.estatus=='surtida' else 'reabastecer' }}">{{ r.estatus|replace('_',' ') }}</span></td>
+<td class="num">{{ '${:,.2f}'.format(r.importe) if r.estatus=='surtida' else '—' }}</td></tr>{% else %}<tr><td colspan="5">Sin refacciones.</td></tr>{% endfor %}</table>
+{% if editable %}<form method="post" action="{{ url_for('orden_refaccion', id_orden=o.id_orden) }}" class="fila" style="margin-top:10px"><div style="flex:3"><select name="id_producto" style="width:100%" required>
+<option value="">Solicitar refacción…</option>{% for p in cat_productos %}<option value="{{ p.id_producto }}">{{ p.codigo }} · {{ p.nombre }} (exist. {{ p.stock_actual }})</option>{% endfor %}</select></div>
+<div><input type="number" name="cantidad" value="1" min="1" max="999" required></div><div style="flex:0 0 auto"><button type="submit">Solicitar</button></div></form>{% endif %}</div>
+<div class="tarjeta"><div class="total">Total: ${{ '{:,.2f}'.format(total) }}</div>
+{% if siguientes %}<form method="post" action="{{ url_for('orden_estatus', id_orden=o.id_orden) }}" style="margin-top:10px">Cambiar estatus a:
+{% for s in siguientes %}<button type="submit" name="estatus" value="{{ s }}" class="{{ 'sec' if s=='cancelada' else '' }}">{{ etiqueta_estatus[s] }}</button> {% endfor %}</form>{% endif %}</div>
+<p><a href="{{ url_for('lista_ordenes') }}">← Volver a órdenes</a></p>{% endblock %}

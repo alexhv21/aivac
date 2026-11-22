@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Refacción{% endblock %}
+{% block contenido %}<h2>{{ 'Nueva refacción' if nuevo else 'Editar refacción' }}</h2>
+<div class="tarjeta" style="max-width:720px">{% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+<form method="post"><div class="fila"><div><label for="codigo">Código</label><input type="text" id="codigo" name="codigo" value="{{ d.codigo or '' }}" required maxlength="20"></div>
+<div style="flex:2"><label for="nombre">Nombre</label><input type="text" id="nombre" name="nombre" value="{{ d.nombre or '' }}" required maxlength="100"></div></div>
+<div class="fila"><div><label for="marca">Marca</label><input type="text" id="marca" name="marca" value="{{ d.marca or '' }}" maxlength="50"></div>
+<div><label for="id_categoria">Categoría</label><select id="id_categoria" name="id_categoria" style="width:100%" required><option value="">Seleccione…</option>
+{% for c in categorias %}<option value="{{ c.id_categoria }}" {{ 'selected' if d.id_categoria|string==c.id_categoria|string }}>{{ c.nombre }}</option>{% endfor %}</select></div>
+<div><label for="id_proveedor">Proveedor</label><select id="id_proveedor" name="id_proveedor" style="width:100%"><option value="">Sin proveedor</option>
+{% for p in proveedores %}<option value="{{ p.id_proveedor }}" {{ 'selected' if d.id_proveedor|string==p.id_proveedor|string }}>{{ p.nombre }}</option>{% endfor %}</select></div></div>
+<label for="descripcion">Características</label><textarea id="descripcion" name="descripcion" rows="2" maxlength="300" style="width:100%;font:inherit;padding:8px;border:1px solid #9DB2D6;border-radius:6px">{{ d.descripcion or '' }}</textarea>
+<label for="compatibilidad">Compatibilidad (vehículos a los que aplica)</label><input type="text" id="compatibilidad" name="compatibilidad" value="{{ d.compatibilidad or '' }}" maxlength="200">
+<div class="fila"><div><label for="precio_compra">Precio de compra</label><input type="number" id="precio_compra" name="precio_compra" step="0.01" min="0" value="{{ d.precio_compra if d.precio_compra is not none else '' }}"></div>
+<div><label for="precio_venta">Precio de venta</label><input type="number" id="precio_venta" name="precio_venta" step="0.01" min="0" value="{{ d.precio_venta if d.precio_venta is not none else '' }}" required></div>
+<div><label for="stock_minimo">Stock mínimo</label><input type="number" id="stock_minimo" name="stock_minimo" min="0" value="{{ d.stock_minimo if d.stock_minimo is not none else 0 }}"></div>
+{% if nuevo %}<div><label for="stock_inicial">Existencia inicial</label><input type="number" id="stock_inicial" name="stock_inicial" min="0" value="{{ d.stock_inicial or 0 }}"></div>{% endif %}
+<div><label for="ubicacion">Ubicación</label><input type="text" id="ubicacion" name="ubicacion" value="{{ d.ubicacion or '' }}" maxlength="30" placeholder="Estante A-3"></div></div>
+{% if not nuevo %}<p style="color:#5b6b86;font-size:13px">La existencia no se edita aquí: use «Registrar entrada» en la ficha o un ajuste de inventario.</p>{% endif %}
+<p><button type="submit">Guardar</button> <a href="{{ url_for('lista_refacciones') }}">Cancelar</a></p></form></div>{% endblock %}

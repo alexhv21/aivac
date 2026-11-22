@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Vehículos{% endblock %}
+{% block contenido %}<h2>Vehículos</h2>
+<div class="tarjeta"><form method="get" class="fila"><div><input type="search" name="q" value="{{ q }}" placeholder="Buscar por placas, marca, modelo o cliente"></div>
+<div style="flex:0 0 auto"><button type="submit">Buscar</button> <a href="{{ url_for('form_vehiculo') }}"><button type="button" class="sec">+ Nuevo vehículo</button></a></div></form></div>
+<div class="tarjeta"><table><tr><th>Placas</th><th>Vehículo</th><th>Año</th><th>Cliente</th><th>Uso</th><th class="num">Km</th><th></th></tr>
+{% for v in filas %}<tr><td><b>{{ v.placas }}</b></td><td>{{ v.marca or '' }} {{ v.modelo or '' }}</td><td>{{ v.anio or '—' }}</td>
+<td><a href="{{ url_for('ficha_cliente', id_cliente=v.id_cliente) }}">{{ v.cliente }}</a></td><td>{{ v.tipo_uso }}</td><td class="num">{{ '{:,}'.format(v.kilometraje_actual) }}</td>
+<td><a href="{{ url_for('form_vehiculo', id_vehiculo=v.id_vehiculo) }}">Editar</a> · <a href="{{ url_for('nueva_orden', vehiculo=v.id_vehiculo) }}">Abrir orden</a></td></tr>
+{% else %}<tr><td colspan="7">No se encontraron vehículos.</td></tr>{% endfor %}</table></div>{% endblock %}

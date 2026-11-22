@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Órdenes de trabajo{% endblock %}
+{% block contenido %}<h2>Órdenes de trabajo</h2>
+<div class="tarjeta"><form method="get" class="fila"><div><label for="estatus" style="margin-top:0">Estatus</label><select id="estatus" name="estatus" style="width:100%">
+<option value="">Todos</option>{% for e in estatuses %}<option value="{{ e }}" {{ 'selected' if estatus==e }}>{{ etiqueta_estatus[e] }}</option>{% endfor %}</select></div>
+<div style="flex:0 0 auto"><button type="submit">Filtrar</button> <a href="{{ url_for('nueva_orden') }}"><button type="button" class="sec">+ Nueva orden</button></a></div></form></div>
+<div class="tarjeta"><table><tr><th>Folio</th><th>Ingreso</th><th>Cliente</th><th>Vehículo</th><th>Mecánico</th><th>Estatus</th><th class="num">Total</th><th></th></tr>
+{% for o in filas %}<tr><td>OT-{{ '%05d' % o.id_orden }}</td><td>{{ o.fecha_ingreso|fh }}</td><td>{{ o.cliente }}</td><td>{{ o.placas }} · {{ o.marca or '' }} {{ o.modelo or '' }}</td>
+<td>{{ o.mecanico }}</td><td><span class="pill {{ 'suficiente' if o.estatus in ('terminada','entregada') else 'proximo' if o.estatus in ('abierta','en_proceso') else 'reabastecer' }}">{{ etiqueta_estatus[o.estatus] }}</span></td>
+<td class="num">${{ '{:,.2f}'.format(o.total) }}</td><td><a href="{{ url_for('ver_orden', id_orden=o.id_orden) }}">Abrir</a></td></tr>
+{% else %}<tr><td colspan="8">No hay órdenes con ese filtro.</td></tr>{% endfor %}</table></div>{% endblock %}

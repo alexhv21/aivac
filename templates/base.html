@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>{% block titulo %}AIVAC{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="layout">
+<nav class="menu"><h1>AIVAC</h1><small>Taller y Refaccionaria Castellanos</small>
+{% if puede_vender %}<a href="{{ url_for('nueva_venta') }}" class="{{ 'activo' if request.endpoint=='nueva_venta' }}">Nueva venta</a>
+<a href="{{ url_for('lista_ventas') }}" class="{{ 'activo' if request.endpoint=='lista_ventas' }}">Ventas</a>{% endif %}
+{% if puede_clientes %}<a href="{{ url_for('lista_clientes') }}" class="{{ 'activo' if request.endpoint in ('lista_clientes','form_cliente','ficha_cliente') }}">Clientes</a>
+<a href="{{ url_for('lista_vehiculos') }}" class="{{ 'activo' if request.endpoint in ('lista_vehiculos','form_vehiculo') }}">Vehículos</a>{% endif %}
+{% if puede_ordenes %}<a href="{{ url_for('lista_ordenes') }}" class="{{ 'activo' if request.endpoint in ('lista_ordenes','nueva_orden','ver_orden') }}">Órdenes de trabajo</a>{% endif %}
+{% if puede_refacciones %}<a href="{{ url_for('lista_refacciones') }}" class="{{ 'activo' if request.endpoint in ('lista_refacciones','form_refaccion','ver_refaccion') }}">Refacciones</a>{% endif %}
+{% if puede_ver_inventario %}<a href="{{ url_for('ver_inventario') }}" class="{{ 'activo' if request.endpoint=='ver_inventario' }}">Inventario</a>{% endif %}
+<div class="quien">{{ usuario }}<br>{{ rol }}<br><a href="{{ url_for('logout') }}" style="padding:6px 0;border:0">Cerrar sesión</a></div></nav>
+<main>{% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="aviso {{ 'err' if cat=='err' else 'ok' }}">{{ m }}</div>{% endfor %}{% endwith %}{% block contenido %}{% endblock %}</main></div></body></html>

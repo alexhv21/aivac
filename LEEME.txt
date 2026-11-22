@@ -1,0 +1,43 @@
+AIVAC - Sistema Integral de Ventas y Almacen Castellanos (Sprint 3)
+==================================================================
+
+REQUISITOS: Python 3.10 o mas nuevo y PostgreSQL 14 o mas nuevo (con pgAdmin).
+
+PRIMERA VEZ
+ 1. En pgAdmin cree la base "aivac" y ejecute en ella el archivo aivac_schema.sql
+    (clic derecho en la base > Query Tool > abrir el archivo > boton Play).
+ 2. Copie configuracion.ejemplo.bat como configuracion.bat y abralo con el Bloc de notas y escriba su contrasena de PostgreSQL
+    en BD_CLAVE (y ajuste usuario, nombre de la base o puerto si son distintos).
+ 3. Doble clic en cargar_datos.bat  -> carga usuarios, clientes, vehiculos, catalogo,
+    ventas y ordenes de ejemplo (todo inventado). Solo se hace una vez.
+ 4. Doble clic en iniciar.bat -> se abre el sistema en el navegador (http://127.0.0.1:5000).
+
+USO DIARIO: solo el paso 4.
+
+SI YA TENIA UNA VERSION ANTERIOR: no necesita borrar la base. iniciar.bat ejecuta migrar.py, que agrega las columnas nuevas
+(ficha de refacciones y cambio en efectivo) y llena la ficha de las refacciones existentes.
+
+USUARIOS DE EJEMPLO (contrasena de todos: Demo2026!)
+  gerente.admin      Gerente Administrativa: ventas, clientes, vehiculos, ordenes, inventario
+  refacciones        Jefe de Refaccionaria:  igual que el anterior
+  gerente.principal  Gerente Principal:      clientes, vehiculos, ordenes, inventario
+  mecanico1/2/3      Mecanicos: solo ven y trabajan las ordenes que se les asignaron
+  repartidor         Repartidor: sin modulos por ahora
+
+IMPORTAR EL CATALOGO REAL DEL TALLER (cuando lo tengan)
+  Prepare un archivo CSV (o Excel .xlsx) con las columnas de plantilla_catalogo.csv:
+     codigo, nombre, categoria, proveedor, precio_compra, precio_venta, stock, stock_minimo
+  En una terminal, dentro de esta carpeta:
+     call configuracion.bat
+     %PY% import_catalogo.py mi_catalogo.csv --simular     (solo valida, no guarda)
+     %PY% import_catalogo.py mi_catalogo.csv               (importa)
+  Servicios:  %PY% import_catalogo.py servicios.csv --servicios   (ver plantilla_servicios.csv)
+  Si un codigo ya existe se actualiza (y el cambio de stock queda como "ajuste" en la bitacora).
+  Si hay errores en cualquier fila no se guarda nada y se listan con su numero de fila.
+  Antes de usar el sistema de verdad, cambie las contrasenas de los usuarios de ejemplo y borre
+  los datos ficticios (o use una base nueva solo con sus datos).
+
+PRUEBAS AUTOMATICAS (usar una base aparte, por ejemplo aivac_test con el esquema y los datos de ejemplo)
+     set "AIVAC_DSN=dbname=aivac_test user=postgres password=SU_CLAVE host=localhost port=5432"
+     py -m unittest tests.test_ventas tests.test_app tests.test_taller tests.test_app_taller tests.test_cambio_catalogo
+  OJO: las pruebas borran ventas, ordenes y movimientos de la base que usen; no las apunte a su base de trabajo.

@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Nueva orden{% endblock %}
+{% block contenido %}<h2>Nueva orden de trabajo</h2>
+<div class="tarjeta" style="max-width:600px">{% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+<form method="post"><label for="id_vehiculo">Vehículo</label><select id="id_vehiculo" name="id_vehiculo" style="width:100%" required>
+<option value="">Seleccione…</option>{% for v in vehiculos %}<option value="{{ v.id_vehiculo }}" {{ 'selected' if d.id_vehiculo|string==v.id_vehiculo|string }}>{{ v.placas }} · {{ v.marca or '' }} {{ v.modelo or '' }} — {{ v.cliente }}</option>{% endfor %}</select>
+{% if rol != 'Mecánico' %}<label for="id_mecanico">Mecánico asignado</label><select id="id_mecanico" name="id_mecanico" style="width:100%" required>
+<option value="">Seleccione…</option>{% for m in mecanicos %}<option value="{{ m.id_usuario }}" {{ 'selected' if d.id_mecanico|string==m.id_usuario|string }}>{{ m.nombre_completo }}</option>{% endfor %}</select>{% endif %}
+<label for="kilometraje">Kilometraje de ingreso</label><input type="number" id="kilometraje" name="kilometraje" value="{{ km }}" min="0" required>
+<label for="observaciones">Observaciones del cliente</label><textarea id="observaciones" name="observaciones" rows="3" style="width:100%;font:inherit;padding:8px;border:1px solid #9DB2D6;border-radius:6px">{{ d.observaciones or '' }}</textarea>
+<p><button type="submit">Abrir orden</button> <a href="{{ url_for('lista_ordenes') }}">Cancelar</a></p></form></div>{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Cliente{% endblock %}
+{% block contenido %}<h2>{{ 'Nuevo cliente' if nuevo else 'Editar cliente' }}</h2>
+<div class="tarjeta" style="max-width:560px">{% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+<form method="post"><label for="nombre">Nombre</label><input type="text" id="nombre" name="nombre" value="{{ d.nombre or '' }}" required maxlength="100">
+<label for="tipo_cliente">Tipo de cliente</label><select id="tipo_cliente" name="tipo_cliente" style="width:100%">
+{% for t in tipos %}<option value="{{ t }}" {{ 'selected' if d.tipo_cliente==t }}>{{ t }}</option>{% endfor %}</select>
+<label for="telefono">Teléfono (10 dígitos)</label><input type="text" id="telefono" name="telefono" value="{{ d.telefono or '' }}">
+<label for="correo">Correo</label><input type="text" id="correo" name="correo" value="{{ d.correo or '' }}">
+<label><input type="checkbox" name="acepta_notificaciones" {{ 'checked' if d.acepta_notificaciones is none or d.acepta_notificaciones else '' }}> Acepta recordatorios por mensaje</label>
+<p><button type="submit">Guardar</button> <a href="{{ url_for('lista_clientes') }}">Cancelar</a></p></form></div>{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Refacciones{% endblock %}
+{% block contenido %}<h2>Refacciones</h2>
+<div class="tarjeta"><form method="get" class="fila"><div style="flex:3"><input type="search" name="q" value="{{ q }}" placeholder="Buscar por nombre, código, marca o vehículo compatible"></div>
+<div><select name="categoria" style="width:100%"><option value="">Todas las categorías</option>{% for c in categorias %}<option value="{{ c.id_categoria }}" {{ 'selected' if cat==c.id_categoria|string }}>{{ c.nombre }}</option>{% endfor %}</select></div>
+<div style="flex:0 0 auto"><button type="submit">Buscar</button> <a href="{{ url_for('form_refaccion') }}"><button type="button" class="sec">+ Nueva refacción</button></a></div></form></div>
+<div class="tarjeta"><table><tr><th>ID</th><th>Código</th><th>Refacción</th><th>Marca</th><th>Categoría</th><th>Ubicación</th><th class="num">Precio</th><th class="num">Exist.</th><th>Estatus</th><th></th></tr>
+{% for f in filas %}<tr><td>{{ f.id_producto }}</td><td>{{ f.codigo }}</td><td>{{ f.nombre }}</td><td>{{ f.marca or '—' }}</td><td>{{ f.categoria }}</td><td>{{ f.ubicacion or '—' }}</td>
+<td class="num">${{ '{:,.2f}'.format(f.precio_venta) }}</td><td class="num"><b>{{ f.stock_actual }}</b></td>
+<td><span class="pill {{ 'suficiente' if f.estatus=='suficiente' else 'proximo' if f.estatus=='próximo al mínimo' else 'reabastecer' }}">{{ f.estatus }}</span></td>
+<td><a href="{{ url_for('ver_refaccion', id_producto=f.id_producto) }}">Ver ficha</a></td></tr>
+{% else %}<tr><td colspan="10">No se encontraron refacciones.</td></tr>{% endfor %}</table></div>{% endblock %}

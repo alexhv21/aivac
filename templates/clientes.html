@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Clientes{% endblock %}
+{% block contenido %}<h2>Clientes</h2>
+<div class="tarjeta"><form method="get" class="fila"><div><input type="search" name="q" value="{{ q }}" placeholder="Buscar por nombre o teléfono"></div>
+<div style="flex:0 0 auto"><button type="submit">Buscar</button> <a href="{{ url_for('form_cliente') }}"><button type="button" class="sec">+ Nuevo cliente</button></a></div></form></div>
+<div class="tarjeta"><table><tr><th>Nombre</th><th>Tipo</th><th>Teléfono</th><th>Correo</th><th class="num">Vehículos</th><th></th></tr>
+{% for f in filas %}<tr><td>{{ f.nombre }}</td><td>{{ f.tipo_cliente }}</td><td>{{ f.telefono or '—' }}</td><td>{{ f.correo or '—' }}</td><td class="num">{{ f.vehiculos }}</td>
+<td><a href="{{ url_for('ficha_cliente', id_cliente=f.id_cliente) }}">Ver</a></td></tr>
+{% else %}<tr><td colspan="6">No se encontraron clientes.</td></tr>{% endfor %}</table></div>{% endblock %}

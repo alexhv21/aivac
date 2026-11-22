@@ -1,0 +1,8 @@
+# Configuración local con la contraseña real de PostgreSQL (NO subir)
+configuracion.bat
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.log

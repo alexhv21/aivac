@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block titulo %}AIVAC · Vehículo{% endblock %}
+{% block contenido %}<h2>{{ 'Nuevo vehículo' if nuevo else 'Editar vehículo' }}</h2>
+<div class="tarjeta" style="max-width:560px">{% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+<form method="post"><label for="id_cliente">Cliente</label><select id="id_cliente" name="id_cliente" style="width:100%" required>
+<option value="">Seleccione…</option>{% for c in clientes %}<option value="{{ c.id_cliente }}" {{ 'selected' if d.id_cliente|string==c.id_cliente|string }}>{{ c.nombre }}</option>{% endfor %}</select>
+<label for="placas">Placas</label><input type="text" id="placas" name="placas" value="{{ d.placas or '' }}" required maxlength="10">
+<div class="fila"><div><label for="marca">Marca</label><input type="text" id="marca" name="marca" value="{{ d.marca or '' }}"></div>
+<div><label for="modelo">Modelo</label><input type="text" id="modelo" name="modelo" value="{{ d.modelo or '' }}"></div>
+<div><label for="anio">Año</label><input type="number" id="anio" name="anio" value="{{ d.anio or '' }}" min="1950" max="2100"></div></div>
+<div class="fila"><div><label for="tipo_uso">Uso</label><select id="tipo_uso" name="tipo_uso" style="width:100%">
+{% for u in usos %}<option value="{{ u }}" {{ 'selected' if d.tipo_uso==u }}>{{ u }}</option>{% endfor %}</select></div>
+<div><label for="kilometraje_actual">Kilometraje actual</label><input type="number" id="kilometraje_actual" name="kilometraje_actual" value="{{ d.kilometraje_actual or 0 }}" min="0"></div></div>
+<p><button type="submit">Guardar</button> <a href="{{ url_for('lista_vehiculos') }}">Cancelar</a></p></form></div>{% endblock %}
